@@ -1,0 +1,85 @@
+parameters: 
+- name: UsePowerShellCore
+  type: boolean
+- name: pool
+  type: string
+  values: 
+  - sio-build-agents
+  - windows-latest 
+  - ubuntu-latest
+  - macOS-latest
+  default: sio-build-agents
+  
+- name: PublishArtifacts
+  type: boolean
+  default: false  
+
+jobs:
+- job: 
+  pool:
+    name: ${{ parameters.pool }}
+  displayName: Test pscore=${{parameters.UsePowerShellCore}} agent=${{ parameters.pool }}
+  steps:
+  - checkout: self
+    clean: false 
+
+  - task: PowerShell@2
+    inputs:
+      targetType: 'inline'
+      script: 'write-Host "##vso[task.setvariable variable=path;]$($env:localappdata)\Microsoft\dotnet;$($env:path)"'
+
+  - task: PowerShell@2
+    inputs:
+      pwsh: $(UsePowerShellCore)
+      filePath: $(System.DefaultWorkingDirectory)/.build/pipeline-tasks.ps1
+      arguments: -Install  
+    displayName: 'Install'
+
+  - task: PowerShell@2
+    inputs:
+      pwsh: $(UsePowerShellCore)
+      filePath: $(System.DefaultWorkingDirectory)/.build/pipeline-tasks.ps1
+      arguments: -Install -Build  
+    displayName: 'Build'
+
+  - task: PowerShell@2
+    inputs:
+      pwsh: $(UsePowerShellCore)
+      filePath: $(System.DefaultWorkingDirectory)/.build/pipeline-tasks.ps1
+      arguments: -Install -Package  
+    displayName: 'Package'
+
+  - task: PowerShell@2
+    inputs:
+      pwsh: $(UsePowerShellCore)
+      filePath: $(System.DefaultWorkingDirectory)/.build/pipeline-tasks.ps1
+      arguments: -Install -Test  
+    displayName: 'Test'
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results'
+    inputs:
+      testResultsFormat: NUnit
+      testRunTitle: Tests (PSCore=$(UsePowerShellCore))
+      testResultsFiles: |
+        **/*.tests.results.xml
+      searchFolder: '$(System.DefaultWorkingDirectory)/out/test-results'
+      failTaskOnFailedTests: true
+    condition: succeededOrFailed()
+
+  - ${{if eq(Parameters.PublishArtifacts,'true') }}:
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish Tests Coverage'
+      inputs:
+        codeCoverageTool: 'JaCoCo'
+        summaryFileLocation: '$(System.DefaultWorkingDirectory)/out/test-results/coverage_*.xml'
+        pathToSources: '$(System.DefaultWorkingDirectory)/src/Pipeline.Config.module'
+        failIfCoverageEmpty: true
+
+    - publish: '$(artifactsPath)/.build'
+      artifact: '.build'
+      condition: succeededOrFailed()
+
+    - publish: '$(artifactsPath)/Pipeline.Config'
+      artifact: 'Pipeline.Config'
+      condition: succeededOrFailed()

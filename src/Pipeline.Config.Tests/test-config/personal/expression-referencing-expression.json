@@ -1,0 +1,12 @@
+{
+    "number_value": 123,
+    "string_value": "hello there",
+    "expression_bool_value": "{(1,2,3).count -eq 3}",    
+    "array": [
+        {
+            "a_string_with_expression": "hello $($settings.string_value)"
+        }
+    ],    
+    "expression_in_string": "hello there $($settings.expression_bool_value)",
+    "expression_refs_expression": "you say $($settings.expression_in_string)"
+}

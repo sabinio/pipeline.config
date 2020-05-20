@@ -1,0 +1,18 @@
+{
+    "number_value": 123,
+    "string_value": "hello there",
+    "expression_bool_value": "{(1,2,3).count -eq 3}",
+    "expression_in_string": "hello there $('friend')",
+    "array": [
+        {
+            "a_string_with_expression": "hello $('mr dumpling')"
+        },
+        {
+            "array": [
+                {
+                    "a_string_with_expression": "hello $('mr dumpling')"
+                }
+            ]
+        }
+    ]
+}

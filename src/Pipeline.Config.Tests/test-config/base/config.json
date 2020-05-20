@@ -1,0 +1,19 @@
+{
+    "settingFrom": "base",
+    "parent": [
+        {
+            "childValue": "ooh"
+        }
+    ],
+    "ParentWithChildSettings": {
+        "Setting1": "original value for setting 1",
+        "Setting2": "original value for setting 2"
+    }
+    ,"ComplexSetting":""
+    ,"SettingBasedonComplexSetting":"$($Settings.ComplexSetting)"
+    ,"SimpleSetting":"SimpleSettingValue"
+    ,"ArrayConstant1":"aValue"
+    ,"ArrayConstant2":"anotherValue"
+    ,"ArrayOfValues":["$($settings.ArrayConstant1)","$($settings.ArrayConstant2)"]
+    ,"ExpressionValue":"$(1+1)"
+}

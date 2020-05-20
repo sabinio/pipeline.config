@@ -1,0 +1,5 @@
+{
+    "prerelease": "jon",
+    "PowershellRepositoryUsername":"simon@sabin.io",
+    "PowershellRepositorykey":  "{throw \"need to get PAT token for Azure DevOps\"}" 
+}

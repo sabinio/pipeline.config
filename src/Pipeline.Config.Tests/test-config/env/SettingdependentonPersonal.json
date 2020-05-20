@@ -1,0 +1,3 @@
+{
+    "ComplexSetting":"$($Settings.SimplePrefix)-SomeValue"
+}

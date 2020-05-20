@@ -1,0 +1,10 @@
+{
+    "IpAddresses": [
+        {
+            "name": "Azure",
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "0.0.0.0"
+        }
+    ],
+    "azure": true
+}

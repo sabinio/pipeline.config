@@ -1,0 +1,11 @@
+{
+    "parent": [
+        {
+            "childValue": "hierarchy"
+        }
+    ]
+    ,  "ParentWithChildSettings": {
+        "Setting2": "newvalueforSetting2"
+        ,"NewSetting":"Value for New Setting"
+    }
+}

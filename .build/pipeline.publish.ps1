@@ -1,0 +1,87 @@
+[CmdletBinding()]
+param($settings, $ArtifactsPath)
+
+   # if (-not $noLogo) { Write-PublishPackage }
+
+    try {
+        write-Verbose "Publishing module $($settings.ProjectName) to Powershell Gallery"
+
+       if ($settings.PowershellRepository -ne  "PSGallery" )
+        {
+            if ($settings.PowershellRepositoryKey -is [securestring] ){
+                Write-Host "Using SecureString"
+                $patToken = $settings.PowershellRepositoryKey 
+            }
+            else {
+                $patToken = $settings.PowershellRepositoryKey | ConvertTo-SecureString -AsPlainText -Force
+            }
+            $credential = New-Object System.Management.Automation.PSCredential($settings.PowershellRepositoryUsername, $patToken)
+            $env:VSS_NUGET_EXTERNAL_FEED_ENDPOINTS = @{endpointCredentials=`
+                ,@{endpoint=$settings.PowershellRepositoryFeed;
+                username=$Settings.PowershellRepositoryUsername; 
+                password=$Credential.GetNetworkCredential().Password }}| Convertto-json -Compress
+
+            if ((Get-PSRepository | where-object Name -eq $settings.PowershellRepository).Count -eq 0){
+                Write-Host "Registering Repository"
+                Write-Host "  Name     : $($Settings.PowershellRepository)"
+                Write-Host "  Feed     : $($settings.PowershellRepositoryFeed)"
+                Write-Host "  Username : $($Settings.PowershellRepositoryUsername)"
+                Write-Host "  Key      : $($Settings.PowershellRepositoryKey)"
+
+                Register-PSRepository -Name $settings.PowershellRepository `
+                                        -SourceLocation $settings.PowershellRepositoryFeed `
+                                        -PublishLocation $settings.PowershellRepositoryFeed `
+                                        -InstallationPolicy Trusted `
+                                        -Verbose:$verbosePreference
+            }
+            $publishModuleArguments =@{NuGetApiKey="no value"} 
+        }
+        else{
+            if ($settings.PowershellRepositoryKey -is [securestring]) { 
+                $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "dummyUsername", $settings.PowershellRepositoryKey 
+                $clearPowershellRepositoryKey = $Credential.GetNetworkCredential().Password 
+            }
+            else {
+                $clearPowershellRepositoryKey = $settings.PowershellRepositoryKey
+            }
+    
+            $publishModuleArguments =@{NuGetApiKey=$clearPowershellRepositoryKey }
+        }
+        if (-not $settings.ShouldNotPublish -or $settings.ShouldNotPublish -eq "False")
+        {
+            Write-Host "Publishing module $($Settings.ProjectName) -version $($settings.Fullversion) to $($settings.PowershellRepository) "
+            Publish-module  -Path "$ArtifactsPath\$($settings.ProjectName)" @publishModuleArguments -Force -Repository $settings.PowershellRepository  -Verbose:$verbosePreference
+            Write-Host "Published module "
+        }
+        
+        Write-Host "Finding module $($Settings.ProjectName) -version $($settings.Fullversion)"
+        $module = Find-Module $Settings.ProjectName -Repository $settings.PowershellRepository -RequiredVersion $settings.Fullversion -AllowPrerelease  -ErrorAction SilentlyContinue -Verbose:$verbosePreference
+        while(-not $module){
+            Write-Verbose "Package not found so sleeping for 10s"
+            Start-Sleep 10
+            Write-Host "." -NoNewline
+            $module = Find-Module $Settings.ProjectName -Repository $settings.PowershellRepository -RequiredVersion $settings.Fullversion  -AllowPrerelease -Verbose:$verbosePreference
+        }
+        Write-Host "-Found module $($module.Version)"
+
+        #Downloading the module
+        $DownloadFolder = join-path $ArtifactsPath "DownloadedModules"
+        if (-not (Test-Path $DownloadFolder)){new-item $DownloadFolder -ItemType Directory| Out-Null}
+        $DownloadModuleFolder = join-path (join-path $DownloadFolder $Settings.ProjectName) $settings.VersionNumber
+        if (Test-Path $DownloadModuleFolder){remove-item $DownloadModuleFolder -Recurse -Force | Out-Null}
+        Write-Host "Saving module locally to test ($DownloadFolder)"
+        Save-Module $Settings.ProjectName -RequiredVersion $settings.Fullversion -Path $DownloadFolder -Repository $settings.PowershellRepository -AllowPrerelease
+        
+        #Testing on the downloaded module
+        Write-Host "Running tests on module in ($DownloadModuleFolder)"
+        Invoke-Pester -Script @{Path = "$rootpath/src/$($settings.ProjectName).tests"; Parameters=@{ModulePath="$DownloadModuleFolder"}} `
+        -ExcludeTag "PSScriptAnalyzer" `
+        -OutputFile "$outPath/test-results/$($settings.ProjectName).postPublish.tests.results.xml" `
+        -OutputFormat NUnitXml  
+    }
+    catch {
+        Throw
+    }
+    finally {
+        Pop-Location
+    }

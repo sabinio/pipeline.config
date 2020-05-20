@@ -1,0 +1,5 @@
+{
+    "VersionNumber": "{\"0.0.{0}{1,4:D4}\" -f ((get-date )-(get-date  \"1 jan 2020\")).Days, [int]((get-date) - (get-date).Date).TotalMinutes}",
+    "PowershellRepositoryUsername":"simon@sabin.io",
+    "System_PullRequest_SourceBranch":"refs/head/2136PrPublishtoAzureDevOps"
+}

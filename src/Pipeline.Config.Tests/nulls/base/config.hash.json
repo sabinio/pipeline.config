@@ -1,0 +1,9 @@
+@{
+    "bob":"smith",
+    "simon":"sdfsd",
+    "app":[{"setting1":"value1"}
+    ,{"Setting2":"value2"}],
+    "app2":[{"setting1":"value1"}
+        ,{"Setting2":"value2"}]
+        
+}
