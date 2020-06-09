@@ -37,14 +37,13 @@ param($settings, $ArtifactsPath)
             $publishModuleArguments =@{NuGetApiKey="no value"} 
         }
         else{
-            if ($settings.PowershellRepositoryKey -is [securestring]) { 
-                $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "dummyUsername", $settings.PowershellRepositoryKey 
-                $clearPowershellRepositoryKey = $Credential.GetNetworkCredential().Password 
+            
+            if ($settings.PowershellRepositoryKey -isnot [securestring]) { 
+                throw "PowershellRepositoryKey must be a secure string"
             }
-            else {
-                $clearPowershellRepositoryKey = $settings.PowershellRepositoryKey
-            }
-    
+            $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "dummyUsername", $settings.PowershellRepositoryKey 
+            $clearPowershellRepositoryKey = $Credential.GetNetworkCredential().Password 
+
             $publishModuleArguments =@{NuGetApiKey=$clearPowershellRepositoryKey }
         }
         if (-not $settings.ShouldNotPublish -or $settings.ShouldNotPublish -eq "False")

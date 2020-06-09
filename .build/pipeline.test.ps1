@@ -27,14 +27,16 @@ try {
                             -Show Fails
                             
     $NormalTests = Invoke-Pester -Script @{Path = "$rootpath/src/$ProjectName.tests"; Parameters=@{ModulePath="$artifactsPath\$ProjectName";ProjectName=$ProjectName}} `
-                            -ExcludeTag "PSScriptAnalyzer",$settings.ExcludeTags `
+                            -ExcludeTag "PSScriptAnalyzer" `
                             -OutputFile "$outPath/test-results/$ProjectName.tests.results.xml" `
                             -OutputFormat NUnitXml  `
                             -CodeCoverage "$artifactsPath\$ProjectName\Functions\*.ps1" `
                             -CodeCoverageOutputFile "$outPath/test-results/coverage_$ProjectName.xml"  `
                             -PassThru `
                             -Show Fails
-    
+
+    Write-Host "Normal Tests Total $($NormalTests.TotalCount ) Passed $($NormalTests.PassedCount) "
+    Write-Host "ScriptAnalysis Tests Total $($ScriptAnalysis.TotalCount ) Passed $($ScriptAnalysis.PassedCount) "
     if ($settings.FailOnTests -eq $true -and `
         ($NormalTests.TotalCount -ne $NormalTests.PassedCount `
         -or $ScriptAnalysis.TotalCount -ne $ScriptAnalysis.PassedCount  ))
