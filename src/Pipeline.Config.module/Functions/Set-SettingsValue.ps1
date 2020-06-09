@@ -5,7 +5,7 @@ Function Set-SettingsValue {
     param(
         [PSCustomObject] $settings,
         [string] $name,
-        [string] $value
+        [object] $value
     )
 
     $isJson = Test-JsonCustom $value

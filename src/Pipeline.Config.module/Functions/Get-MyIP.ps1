@@ -13,7 +13,7 @@ Function Get-MyIp {
     }
     catch {
             Write-Host "Error occurred getting MyIP - Will be ignored"
-            Write-Host $error
+            Write-Host $_.Message
             $myIP=""
     }
     return $myIP

@@ -32,7 +32,7 @@ param($settings, $ArtifactsPath)
                                         -SourceLocation $settings.PowershellRepositoryFeed `
                                         -PublishLocation $settings.PowershellRepositoryFeed `
                                         -InstallationPolicy Trusted `
-                                        -Verbose:$verbosePreference
+                                        -Verbose:$verbosePreference -Credential $credential
             }
             $publishModuleArguments =@{NuGetApiKey="no value"} 
         }
@@ -50,17 +50,18 @@ param($settings, $ArtifactsPath)
         if (-not $settings.ShouldNotPublish -or $settings.ShouldNotPublish -eq "False")
         {
             Write-Host "Publishing module $($Settings.ProjectName) -version $($settings.Fullversion) to $($settings.PowershellRepository) "
-            Publish-module  -Path "$ArtifactsPath\$($settings.ProjectName)" @publishModuleArguments -Force -Repository $settings.PowershellRepository  -Verbose:$verbosePreference
+            
+            Publish-module  -Path "$ArtifactsPath\$($settings.ProjectName)" @publishModuleArguments -Force -Repository $settings.PowershellRepository   -ErrorAction Stop -Verbose:$verbosePreference
             Write-Host "Published module "
         }
         
         Write-Host "Finding module $($Settings.ProjectName) -version $($settings.Fullversion)"
-        $module = Find-Module $Settings.ProjectName -Repository $settings.PowershellRepository -RequiredVersion $settings.Fullversion -AllowPrerelease  -ErrorAction SilentlyContinue -Verbose:$verbosePreference
+        $module = Find-Module $Settings.ProjectName -Repository $settings.PowershellRepository -RequiredVersion $settings.Fullversion -AllowPrerelease -Credential $credential -ErrorAction SilentlyContinue -Verbose:$verbosePreference
         while(-not $module){
             Write-Verbose "Package not found so sleeping for 10s"
             Start-Sleep 10
             Write-Host "." -NoNewline
-            $module = Find-Module $Settings.ProjectName -Repository $settings.PowershellRepository -RequiredVersion $settings.Fullversion  -AllowPrerelease -Verbose:$verbosePreference
+            $module = Find-Module $Settings.ProjectName -Repository $settings.PowershellRepository -RequiredVersion $settings.Fullversion  -AllowPrerelease -Verbose:$verbosePreference -ErrorAction SilentlyContinue -Credential $credential
         }
         Write-Host "-Found module $($module.Version)"
 
@@ -70,12 +71,12 @@ param($settings, $ArtifactsPath)
         $DownloadModuleFolder = join-path (join-path $DownloadFolder $Settings.ProjectName) $settings.VersionNumber
         if (Test-Path $DownloadModuleFolder){remove-item $DownloadModuleFolder -Recurse -Force | Out-Null}
         Write-Host "Saving module locally to test ($DownloadFolder)"
-        Save-Module $Settings.ProjectName -RequiredVersion $settings.Fullversion -Path $DownloadFolder -Repository $settings.PowershellRepository -AllowPrerelease
+        Save-Module $Settings.ProjectName -RequiredVersion $settings.Fullversion -Path $DownloadFolder -Repository $settings.PowershellRepository -AllowPrerelease  -verbose:$verbosePreference -ErrorAction Stop -Credential $credential
         
         #Testing on the downloaded module
         Write-Host "Running tests on module in ($DownloadModuleFolder)"
         Invoke-Pester -Script @{Path = "$rootpath/src/$($settings.ProjectName).tests"; Parameters=@{ModulePath="$DownloadModuleFolder"}} `
-        -ExcludeTag "PSScriptAnalyzer" `
+        -Tag "ModuleInstall" `
         -OutputFile "$outPath/test-results/$($settings.ProjectName).postPublish.tests.results.xml" `
         -OutputFormat NUnitXml  
     }

@@ -1,5 +1,6 @@
 
 Function Initialize-Settings{
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Not changed yet')]
     [CmdletBinding()]
     param($ConfigRootPath
          

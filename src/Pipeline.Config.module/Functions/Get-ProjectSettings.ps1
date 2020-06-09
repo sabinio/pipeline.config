@@ -1,12 +1,13 @@
 Function Get-ProjectSettings {
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Not changed yet')]
     param(
         [string]$configRootPath,
         [string]$environment,
         [parameter(ValueFromRemainingArguments = $true)]
         $overrides
     )
-    Write-Host "Get-Settings"
+
     $settings = (Get-Settings -environment $environment -configRootPath $configRootPath @overrides)
 
     if ($settings.AddMyIP -eq $true) {

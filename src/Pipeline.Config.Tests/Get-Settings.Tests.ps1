@@ -230,6 +230,27 @@ foreach ($function in (Get-ChildItem "$ModulePath\functions\*.ps1"))
             Expand-String '{get-value}'  | Should be "a new value"
         }
     }
+    Describe "Overrides should work" {
+        IT "Given a value over"{
+            
+            $SecureStringValue = (Get-Settings -ConfigRootPath $PSScriptRoot/test-config -environment dev).SecureValue 
+            $SecureStringValue -is [SecureString] | Should  be $true
+
+            $Credentials = New-Object System.Management.Automation.PSCredential("sas", $SecureStringValue )
+            $SecureStringValueClear = "$($Credentials.GetNetworkCredential().Password)"
+            $SecureStringValueClear | Should  be "non set"
+            }
+       IT "Given a value over"{
+           $ValueToSet = "Some Value"
+          $SecureStringValue = (Get-Settings -ConfigRootPath $PSScriptRoot/test-config -environment dev -SecureValue (ConvertTo-SecureString $ValueToSet -asplainText -Force) ).SecureValue
+    
+            $SecureStringValue -is [SecureString] | Should  be $true
+
+            $Credentials = New-Object System.Management.Automation.PSCredential("sas", $SecureStringValue )
+            $SecureStringValueClear = "$($Credentials.GetNetworkCredential().Password)"
+            $SecureStringValueClear | Should  be $ValueToSet
+            }
+    }
 Describe "Banners work"{
     ("","Build","BuildSSIS","Deploy","DeployData","DeploySSIS","DeployInfra","Install","Package","PackageSSIS","Test","TestModules","TestSSIS","Tidy") |ForEach-Object{
     it "Write-Banner$_ doesn't error" {

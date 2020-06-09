@@ -1,5 +1,7 @@
 Function Get-Settings {
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Not changed yet')]
+    
     param(
         [parameter(Mandatory=$true)]
         [string]$configRootPath,

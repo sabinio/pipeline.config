@@ -1,6 +1,7 @@
 
 Function Import-SettingsFromFile {
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Not changed yet')]
     param($Settings
         , $file)
 

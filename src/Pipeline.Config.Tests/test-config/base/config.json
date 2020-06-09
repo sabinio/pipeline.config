@@ -16,4 +16,5 @@
     ,"ArrayConstant2":"anotherValue"
     ,"ArrayOfValues":["$($settings.ArrayConstant1)","$($settings.ArrayConstant2)"]
     ,"ExpressionValue":"$(1+1)"
+    ,"SecureValue":"{Convertto-SecureString 'non set' -force -asplainText}"
 }

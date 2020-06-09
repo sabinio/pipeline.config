@@ -13,7 +13,7 @@ schema: 2.0.0
 ## SYNTAX
 
 ```
-Set-SettingsValue [[-settings] <PSObject>] [[-name] <String>] [[-value] <String>] [<CommonParameters>]
+Set-SettingsValue [[-settings] <PSObject>] [[-name] <String>] [[-value] <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -64,7 +64,7 @@ Accept wildcard characters: False
 {{ Fill value Description }}
 
 ```yaml
-Type: String
+Type: Object
 Parameter Sets: (All)
 Aliases:
 

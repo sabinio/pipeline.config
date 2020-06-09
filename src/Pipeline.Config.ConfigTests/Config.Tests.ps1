@@ -2,6 +2,7 @@ param($RootPath)
 
 if (-not $RootPath) { $RootPath = "$PSScriptRoot\..\.." }
 $configRoot = "$rootpath/.build/config/"
+Remove-module Pipeline.Config -force
 Import-Module $rootpath/src/Pipeline.Config.Module/Pipeline.Config.psd1 -Force 
 
 BeforeAll {
@@ -46,7 +47,7 @@ Describe "Ensure Config runs for all users" {
     $environments = (Get-ChildItem $configRoot\env | Select-Object basename -Unique).basename 
     $OriginalUsername = $env:username 
        
-    Write-Host ("{0} {1}" -f $users.Count, $environments.Count)
+    Write-Verbose ("{0} {1}" -f $users.Count, $environments.Count)
     foreach ($environment in $environments) {
         it "ensure settings work for environment:$environment " {
             #  Mock GetPersonalConfigPath { "nonexistenuser-$environment.json" }
