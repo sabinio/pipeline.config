@@ -8,7 +8,7 @@ Describe 'Ensure all functions are being exported ' -Tag "ModuleInstall" {
     Write-Host $ModulePath
 
     if (get-module $ProjectName){remove-module $ProjectName -Force}
-    import-module "$ModulePath\$ProjectName.psd1" -Force -Verbose
+    import-module "$ModulePath\$ProjectName.psd1" -Force
 
     $module = get-module $ProjectName
     foreach ($functionFile in (Get-ChildItem "$ModulePath\functions" -File)) {

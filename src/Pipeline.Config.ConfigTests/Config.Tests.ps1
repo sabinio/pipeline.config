@@ -69,6 +69,9 @@ Describe "Ensure Config runs for all users" {
                     if ("RichardLee","JonSeddon" -contains $user -and $environment -eq "localdev"  ){
                         $getSetting | should Throw "need to get PAT token for Azure DevOps"
                     }
+                    elseif ("RichardLee","JonSeddon" -contains $user -and $environment -eq "ci"  ){
+                        $getSetting | should Throw "need to get PAT token for PSGAllery and but in KeyVault"
+                    }
                     else {
                         $getSetting| should not throw
                     }

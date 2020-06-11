@@ -3,6 +3,5 @@ Function Get-KeyVaultSecret {
         [string]$vaultName, 
         [string]$secretName
     )
-
-    (Get-AzureKeyVaultSecret -VaultName $vaultName -Name $secretName).SecretValueText
+    (Get-AzKeyVaultSecret -VaultName $vaultName -Name $secretName).SecretValue
 }

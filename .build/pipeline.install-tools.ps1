@@ -20,6 +20,7 @@ Install-Nuget
 @{Module="PowerShellGet";Version=2.2.4.1},`
 @{Module="Pester";Version=4.5},`
 @{Module="PSScriptAnalyzer"},`
-@{Module="platyps"} |ForEach-Object{ Install-PsModuleFast @_}
+@{Module="platyps"},`
+@{Module="Az.keyVault"} |ForEach-Object{ Install-PsModuleFast @_}
 
 Install-AzDoArtifactsCredProvider

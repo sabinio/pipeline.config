@@ -5,10 +5,12 @@ Function Get-KeyVaultSecrets {
         [string]$vaultName
     )
 
-    Get-AzureKeyVaultSecret -VaultName $vaultName | Foreach-Object {
-      
+    $foo = Get-AzKeyVaultSecret -VaultName $vaultName
+    $foo | Foreach-Object {
+      # get-AzKeyVaultSecret doesn't return the secret unless the secretname is passed.
+      # We use 
         $secret = Get-KeyVaultSecret -vaultName $vaultName -secretName $_.Name
-        @{"Name" = $_.Name; "Value" = $secret}
+    [pscustomObject]@{"Name" = $_.Name; "Value" = $secret}
     }
 
     

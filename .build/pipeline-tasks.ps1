@@ -39,8 +39,13 @@ try {
 
     $ConfigVerbose = (Test-LogAreaEnabled -logging $verboseLogging -area "config")
 
-    Import-Module ../src/pipeline.Config.module/pipeline.Config.psd1 -Force -verbose:$ConfigVerbose #Verbose needs to be passed through as its not taken from the scripts setting
+    
+    if ($Install) {  
+        ./pipeline.install-tools.ps1  -artifactsPath "$artifactsPath\tools" -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "install")
+    }
 
+    Import-Module ../src/pipeline.Config.module/pipeline.Config.psd1 -Force -verbose:$ConfigVerbose #Verbose needs to be passed through as its not taken from the scripts setting
+    
     if (-not $noLogo) {
         Write-Banner
     }
@@ -63,10 +68,6 @@ try {
     }
     else {
         New-Item -ItemType Directory -Force -Path "$outPath/test-results/" | Out-Null 
-    }
-
-    if ($Install) {  
-        ./pipeline.install-tools.ps1  -artifactsPath "$artifactsPath\tools" -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "install")
     }
 
     if ($Build) {     
