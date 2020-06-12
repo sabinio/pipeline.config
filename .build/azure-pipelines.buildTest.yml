@@ -60,9 +60,10 @@ jobs:
     displayName: 'Publish Test Results'
     inputs:
       testResultsFormat: NUnit
-      testRunTitle: Tests (PSCore=$(UsePowerShellCore))
+      testRunTitle: Tests (PSCore=${{parameters.UsePowerShellCore}})
+      mergeTestResults: true
       testResultsFiles: |
-        **/*.tests.results.xml
+        **/*tests.results.xml
       searchFolder: '$(System.DefaultWorkingDirectory)/out/test-results'
       failTaskOnFailedTests: true
     condition: succeededOrFailed()
