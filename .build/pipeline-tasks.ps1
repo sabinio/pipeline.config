@@ -11,7 +11,7 @@ param (
     [string] $environment = $env:environment,
     [string] $rootPath = $env:rootpath,
     [string] $artifactsPath = $env:artifactspath,
-    [string] $verboseLogging = "", #"Install,Build,Package,DeployInfra,Deploy,Config,Module,*",
+    [string] $verboseLogging = $env:VerboseLogging, #"Install,Build,Package,DeployInfra,Deploy,Config,Module,*",
     [parameter(ValueFromRemainingArguments = $true)]
     $parameterOverrides
 )
@@ -84,7 +84,8 @@ try {
     }
 
     if ($Publish) {
-        ./pipeline.update-manifest.ps1  -settings $settings -ArtifactsPath $artifactsPath -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "publish")
+        . ./pipeline.update-manifest.ps1 
+        Update-Manifest -settings $settings -ArtifactsPath $artifactsPath -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "publish")
         ./pipeline.publish.ps1  -settings $settings -ArtifactsPath $artifactsPath -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "publish")
     }
 

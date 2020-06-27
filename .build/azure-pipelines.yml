@@ -2,10 +2,12 @@
 name: $(BuildDefinitionName)_$(VersionNumber)_$(SourceBranchName)
 trigger:
 - master
+parameters:
+- name: logging
+  default: All
+  type: string
 
 variables:
-- name: verboselogging
-  value: ""
 - name: artifactsPath
   value: "$(Build.ArtifactStagingDirectory)/artifacts"
 - name: BaseVersionNumber 
@@ -14,13 +16,16 @@ variables:
   value: $[counter(variables['BaseVersionNumber'], 1)]
 - name: VersionNumber 
   value: $(BaseVersionNumber).$(Minor)
-  
+- name: verboselogging
+  value: ${{parameters.logging}}
+
 stages: 
 - stage: BuildAndTest
   displayName: Build and Test 
   variables:
   - name: environment 
     value: "ci"
+
   jobs: 
   - template: azure-pipelines.buildTest.yml
     parameters:
