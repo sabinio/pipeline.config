@@ -1,6 +1,6 @@
 Function Get-ProjectSettings {
     [CmdletBinding()]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification='Not changed yet')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Not changed yet')]
     param(
         [string]$configRootPath,
         [string]$environment,
@@ -13,10 +13,15 @@ Function Get-ProjectSettings {
     if ($settings.AddMyIP -eq $true) {
         Write-Host "Get MyIP for configuration in ARM deployment"
         $MyIp = Get-MyIp
-        write-Host ($settings.IpAddresses.startIpAddress).GetType()
-        Write-Host 
-        if ($myIp -and -not  $settings.IpAddresses.startIpAddress.Contains($myIp.Content)) {
-            $settings.IpAddresses += (@{name = "myIp"; startIpAddress = $myIp.Content; endIpAddress = $myIp.Content} | ConvertTo-Json | ConvertFrom-Json)
+        
+        if ($myIp) {
+            $NewIp = @{name = "myIp"; startIpAddress = $myIp.Content; endIpAddress = $myIp.Content }
+            if ( -not $settings.IpAddresses) {
+                $settings.IpAddresses = @($NewIp)
+            }
+            elseif ( -not  $settings.IpAddresses.startIpAddress.Contains($myIp.Content)) {
+                $settings.IpAddresses += ($NewIp)
+            }
         }
     }
 
