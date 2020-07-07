@@ -6,12 +6,12 @@ Remove-module Pipeline.Config -force
 Import-Module $rootpath/src/Pipeline.Config.Module/Pipeline.Config.psd1 -Force 
 
 BeforeAll {
-    if ($env:OldUsername) { throw "`$env:oldUsername set, copy back to `$env:username to ensure you don't lose it" }
-    $Env:Oldusername = $env:USERNAME
+    if ($env:OldUsername) { throw "`$env:oldUsername set, copy back to `$env:UserName to ensure you don't lose it" }
+    $Env:Oldusername = $env:UserName
 }
 
 AfterAll {
-    $env:USERNAME = $Env:Oldusername
+    $env:UserName = $Env:Oldusername
     $Env:Oldusername = ""
 }
 Describe "Config tests" {
@@ -45,39 +45,39 @@ Describe "Config tests" {
 Describe "Ensure Config runs for all users" {
     $users = ((Get-ChildItem $configRoot\personal).basename | Select-Object @{n = "user"; e = { $_.split('-')[0] } } -Unique).user
     $environments = (Get-ChildItem $configRoot\env | Select-Object basename -Unique).basename 
-    $OriginalUsername = $env:username 
+    $OriginalUsername = $env:UserName 
        
     Write-Verbose ("{0} {1}" -f $users.Count, $environments.Count)
     foreach ($environment in $environments) {
         it "ensure settings work for environment:$environment " {
             #  Mock GetPersonalConfigPath { "nonexistenuser-$environment.json" }
             try {
-                $env:username = "non existent user"
+                $env:UserName = "non existent user"
                 
                 Get-ProjectSettings -environment $environment -ConfigRootPath $configRoot 
             }
             finally {
-                $env:username = $OriginalUsername
+                $env:UserName = $OriginalUsername
             }
         }
 
         foreach ($user in $users) {
             it "ensure settings work for user:$user for environment:$environment " {
-                $env:username = $user
+                $env:UserName = $user
                 try {
-                    $getSetting = {Get-ProjectSettings -environment $environment -ConfigRootPath $configRoot }
-                    if ("RichardLee","JonSeddon" -contains $user -and $environment -eq "localdev"  ){
+                    $Settings = @{}
+                    if ("SimonSabin","JonSeddon" -contains $user){$settings=@{PowershellRepositoryKey="none"}}
+                    $getSetting = {Get-ProjectSettings -environment $environment -ConfigRootPath $configRoot @Settings -verbose:$VerbosePreference}
+
+                    if ("RichardLee" -contains $user -and $environment -eq "localdev"  ){
                         $getSetting | should Throw "need to get PAT token for Azure DevOps"
-                    }
-                    elseif ("RichardLee","JonSeddon" -contains $user -and $environment -eq "ci"  ){
-                        $getSetting | should Throw "need to get PAT token for PSGAllery and but in KeyVault"
-                    }
+                    }                 
                     else {
                         $getSetting| should not throw
                     }
                 }
                 finally {
-                    $env:username = $OriginalUsername
+                    $env:UserName = $OriginalUsername
                 } }
         }
     }

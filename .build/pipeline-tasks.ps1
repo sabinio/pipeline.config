@@ -15,7 +15,7 @@ param (
     [parameter(ValueFromRemainingArguments = $true)]
     $parameterOverrides
 )
-$ErrorActionPreference = "Stop"
+$global:ErrorActionPreference = "Stop"
 
 push-location $PSScriptroot
 Set-StrictMode -Version 1.0
@@ -39,9 +39,12 @@ try {
 
     $ConfigVerbose = (Test-LogAreaEnabled -logging $verboseLogging -area "config")
 
-    
+    if ($Clean) {
+        if (Test-path $artifactsPath) { Remove-Item -Path $artifactsPath -Recurse -Force | Out-Null }
+        if (Test-path $outPath) { Remove-Item -Path $outPath -Recurse -Force | Out-Null }
+    }
     if ($Install) {  
-        ./pipeline.install-tools.ps1  -artifactsPath "$artifactsPath\tools" -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "install")
+        ./pipeline.install-tools.ps1  -artifactsPath (join-path $artifactsPath "tools") -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "install")
     }
 
     Import-Module ../src/Pipeline.Config.module/Pipeline.Config.psd1 -Force -verbose:$ConfigVerbose #Verbose needs to be passed through as its not taken from the scripts setting
@@ -51,27 +54,23 @@ try {
     }
 
     #Load settings from config
-    $settings = (Get-ProjectSettings -environment $environment -ConfigRootPath "$PSScriptroot/config/" -verbose:$ConfigVerbose -overrides $parameterOverrides) 
+    $settings = (Get-ProjectSettings -environment $environment -ConfigRootPath (join-path $PSScriptroot "config") -verbose:$ConfigVerbose -overrides $parameterOverrides) 
 
     write-host ("##vso[build.updatebuildnumber] {0}.{1}" -f $settings.ProjectName, $settings.FullVersion)
 
     Write-Host ($settings | Convertto-json)
 
-    if ($Clean) {
-        if (Test-path $artifactsPath) { Remove-Item -Path $artifactsPath -Recurse -Force | Out-Null }
-        if (Test-path $outPath) { Remove-Item -Path $outPath -Recurse -Force | Out-Null }
-    }
-
-    if (Test-Path "$outPath/test-results/") {
+	$testreultsFolder = join-path $outPath "test-results"  
+    if (Test-Path $testreultsFolder ){
         Write-Verbose "Clearing Test results folder"
-        Remove-Item "$outPath/test-results/*" -Recurse -Force 
+        Remove-Item (join-path $testreultsFolder "*" ) -Recurse -Force 
     }
     else {
-        New-Item -ItemType Directory -Force -Path "$outPath/test-results/" | Out-Null 
+        New-Item -ItemType Directory -Force -Path $testreultsFolder | Out-Null 
     }
 
     if ($Build) {     
-        ./pipeline.build.ps1  -settings $settings -rootPath $rootPath -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "build")
+     	./pipeline.build.ps1  -settings $settings -rootPath $rootPath -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "build")
         ./pipeline.createdocs.ps1  -settings $settings -rootPath $rootPath -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "build")
     }
 

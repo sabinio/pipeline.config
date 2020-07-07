@@ -8,13 +8,12 @@ param($settings, $ArtifactsPath)
 
        if ($settings.PowershellRepository -ne  "PSGallery" )
         {
-            if ($settings.PowershellRepositoryKey -is [securestring] ){
-                Write-Host "Using SecureString"
-                $patToken = $settings.PowershellRepositoryKey 
+            if ($settings.PowershellRepositoryKey -isnot [securestring] ){
+                throw "PowershellRepositoryKey must be a secure string"
             }
-            else {
-                $patToken = $settings.PowershellRepositoryKey | ConvertTo-SecureString -AsPlainText -Force
-            }
+
+            $patToken = $settings.PowershellRepositoryKey 
+            
             $credential = New-Object System.Management.Automation.PSCredential($settings.PowershellRepositoryUsername, $patToken)
             $env:VSS_NUGET_EXTERNAL_FEED_ENDPOINTS = @{endpointCredentials=`
                 ,@{endpoint=$settings.PowershellRepositoryFeed;
@@ -33,6 +32,7 @@ param($settings, $ArtifactsPath)
                                         -PublishLocation $settings.PowershellRepositoryFeed `
                                         -InstallationPolicy Trusted `
                                         -Verbose:$verbosePreference -Credential $credential
+
             }
             $publishModuleArguments =@{NuGetApiKey="no value"} 
         }
@@ -43,7 +43,6 @@ param($settings, $ArtifactsPath)
             }
             $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "dummyUsername", $settings.PowershellRepositoryKey 
             $clearPowershellRepositoryKey = $Credential.GetNetworkCredential().Password 
-
             $publishModuleArguments =@{NuGetApiKey=$clearPowershellRepositoryKey }
         }
         if (-not $settings.ShouldNotPublish -or $settings.ShouldNotPublish -eq "False")

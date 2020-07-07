@@ -64,6 +64,7 @@ Function Get-Settings {
 
         for ($i = 0; $i -lt $overrides.Count; $i++) {
             $name = $overrides[$i].trim('-')
+            if ($name[-1] -eq ":"){$name = $name.substring(0,$name.Length -1)}
                 
             #Switch parameters are either the last param or the next item is another param and starts with a - 
             if ($i -eq $overrides.count - 1 -or $overrides[$i + 1] -like "-*") {

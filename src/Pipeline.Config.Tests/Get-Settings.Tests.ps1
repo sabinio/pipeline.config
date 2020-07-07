@@ -21,7 +21,8 @@ Describe 'Get-Settings' {
     It "Given no config files, fails" {
         
         $missingConfigPath = "TestDrive:missing"
-        { Get-Settings -ConfigRootPath $missingConfigPath } | Should  -Throw "Config file not Found: `'$missingConfigPath\base\config.json`'"
+        $expectedfilename =join-path (join-path  $missingConfigPath "base") "config.json"
+        { Get-Settings -ConfigRootPath $missingConfigPath } | Should  -Throw "Config file not Found: `'$expectedfilename`'"
     }
 
     It "Given no config files, fails" {
@@ -46,6 +47,13 @@ Describe "Override parameters" {
         (Get-Settings -ConfigRootPath $PSScriptRoot/test-config -environment dev  -settingFrom bertie ).settingFrom | Should be "bertie"
     }
 }
+Describe "Override parameters by splatting works" {
+    It "Given override parameters by splatting" {
+        $Override= @{settingFrom="randomValue"}
+        (Get-Settings -ConfigRootPath $PSScriptRoot/test-config -environment dev  @Override ).settingFrom | Should be $Override.settingFrom
+    }
+}
+
 Describe "Switch Parameters" {
     It "Given a switch parameter the value should be true" {
         (Get-Settings -ConfigRootPath $PSScriptRoot/test-config -environment dev  -TurnThisOn).TurnThisOn | Should be $true
