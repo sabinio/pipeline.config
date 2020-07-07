@@ -4,5 +4,5 @@ Function GetPersonalConfigPath {
         [string]$environment
     )
     
-    join-path "personal" "$($env:UserName)-$environment.json"
+    join-path "personal" "$($env:UserName)-$environment"
 }

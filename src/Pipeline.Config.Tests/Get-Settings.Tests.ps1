@@ -1,14 +1,14 @@
 ﻿param($ModulePath)
 
-if (-not $ModulePath) { $ModulePath = "$PSScriptRoot\..\Pipeline.Config.module" }
+if (-not $ModulePath) { $ModulePath = join-path $PSScriptRoot "../Pipeline.Config.module" }
 
 get-module Pipeline.Tools | Remove-Module -force
 #Import-Module "$ModuleBase\ConfigHelper.psm1"
 
-foreach ($function in (Get-ChildItem "$ModulePath\functions\internal\*.ps1")) {
+foreach ($function in (Get-ChildItem "$ModulePath/functions/internal/*.ps1")) {
     . $function 
 }
-foreach ($function in (Get-ChildItem "$ModulePath\functions\*.ps1")) {
+foreach ($function in (Get-ChildItem "$ModulePath/functions/*.ps1")) {
     . $function
 }
 
@@ -37,7 +37,7 @@ Describe 'Get-Settings' {
     }
 
     It "Given personal overrides environment, personal rules" {
-        Mock GetPersonalConfigPath { "personal/person.json" }
+        Mock GetPersonalConfigPath { "personal/person" }
         (Get-Settings -ConfigRootPath $PSScriptRoot/test-config -environment dev ).settingFrom | Should be "personal-person"
     }
 }
@@ -142,7 +142,7 @@ Describe "Hierarchy Tests" {
     It "Given a setting with an expression ensure the verbose output returns correctly" {
         $myEnv = "SettingdependentonPersonal"
         $ConfigPath = Resolve-Path "$PSScriptRoot/test-config"
-        Mock GetPersonalConfigPath { "personal/$myEnv-person.json" }
+        Mock GetPersonalConfigPath { "personal/$myEnv-person" }
         (Get-Settings -ConfigRootPath $ConfigPath -environment $MyEnv  ).SettingBasedonComplexSetting | Should be "ThePrefixIWant-SomeValue"
     }
 

@@ -44,7 +44,7 @@ try {
         ./pipeline.install-tools.ps1  -artifactsPath "$artifactsPath\tools" -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "install")
     }
 
-    Import-Module ../src/pipeline.Config.module/pipeline.Config.psd1 -Force -verbose:$ConfigVerbose #Verbose needs to be passed through as its not taken from the scripts setting
+    Import-Module ../src/Pipeline.Config.module/Pipeline.Config.psd1 -Force -verbose:$ConfigVerbose #Verbose needs to be passed through as its not taken from the scripts setting
     
     if (-not $noLogo) {
         Write-Banner

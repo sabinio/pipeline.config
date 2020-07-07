@@ -30,16 +30,8 @@ Function Get-Settings {
         }
     }
     
-    $personalPath =join-path $configRootPath (GetPersonalConfigPath  -environment $environment)
+    Import-SettingsFromPersonalFile -ConfigRootPath $configRootPath -Settings $settings -environment $environment
     
-    if (Test-Path $personalPath) {
-        Write-Verbose "Loading config from $personalPath"  
-        Import-SettingsFromFile $settings $personalPath 
-    }
-    else {
-        Write-Verbose "We have no personal config file: '$($personalPath)'"
-    }
-
     #Loop through environment variables and set values
     $settings | Get-Member -MemberType NoteProperty | ForEach-Object { 
         if (test-path env:$($_.Name)) {

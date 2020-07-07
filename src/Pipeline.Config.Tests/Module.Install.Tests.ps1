@@ -19,3 +19,26 @@ Describe 'Ensure all functions are being exported ' -Tag "ModuleInstall" {
         }     
     }
 }
+Describe 'Ensure all psd1 matches' -Tag "ModuleInstall" {
+    Write-Host $ProjectName
+    Write-Host $ModulePath
+
+    if (get-module $ProjectName){remove-module $ProjectName -Force}
+    
+    $moduleData = import-localizedData -FileName "$ProjectName.psd1" -baseDirectory $ModulePath 
+
+        it "module name matches exactly in psd1 file" {
+            $moduleData.RootModule | Should beexactly "$ProjectName.psm1"
+        }     
+        it "module name matches exactly in psd1 file" {
+            (Get-Item (join-path $ModulePath "*.psm1" )).Name| Should beexactly "$ProjectName.psm1"
+        }     
+
+        it "Functions folder should match the name 'Functions' exactly" {
+            (Get-ChildItem $modulePath -Directory -Filter "Functions" ).BaseName | Should beexactly "Functions"
+        }     
+        it "Internal folder should match the name 'Internal' exactly" {
+            (Get-ChildItem (join-path $modulePath "Functions") -Directory -Filter "Internal" ).BaseName | Should beexactly "Internal"
+        }     
+    
+}

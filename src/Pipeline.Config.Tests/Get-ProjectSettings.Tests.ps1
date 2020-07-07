@@ -23,7 +23,7 @@ Describe "Test Get-ProjectSettings" {
     }
 
     It "Doesn't fail if NoIp Addresses defined " {
-        Mock Get-Settings { @{AddMyIp = $True; IpAddresses = @() } }
+        Mock Get-Settings { @{AddMyIp = $True; IpAddresses = @() } }    
         Mock Get-MyIp { @{Content="1.1.1.1"} }
         ( Get-ProjectSettings -configRootPath "test" ).IpAddresses.startIpAddress | Should contain "1.1.1.1"
     }
