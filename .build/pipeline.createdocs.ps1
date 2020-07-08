@@ -5,7 +5,7 @@ param($settings, $rootpath)
 
 $psd1File = "$rootpath\src\$($settings.ProjectName).module\$($settings.ProjectName).psd1"
 $MarkDownHelp = "$rootpath\\docs"
-$functions = "$rootpath\src\$($settings.ProjectName).module\functions"
+$functions = "$rootpath\src\$($settings.ProjectName).module\Functions"
 
 Import-Module $psd1File -Force
     $files = Get-ChildItem $functions -Filter *.ps1

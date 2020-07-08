@@ -49,7 +49,7 @@ param($ModulePath)
 $CommandName = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 
 if (-not $ModulePath){ $ModulePath = "$PSScriptRoot\..\Pipeline.Tools.module"}
-. $ModulePath\functions\$CommandName.ps1
+. $ModulePath\Functions\$CommandName.ps1
 ```
 
 ## PSScriptAnalyser

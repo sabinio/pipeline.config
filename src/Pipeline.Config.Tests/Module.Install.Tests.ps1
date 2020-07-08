@@ -11,7 +11,7 @@ Describe 'Ensure all functions are being exported ' -Tag "ModuleInstall" {
     import-module "$ModulePath\$ProjectName.psd1" -Force
 
     $module = get-module $ProjectName
-    foreach ($functionFile in (Get-ChildItem "$ModulePath\functions" -File)) {
+    foreach ($functionFile in (Get-ChildItem "$ModulePath\Functions" -File)) {
             $function = $functionFile.basename
         it "$Function is exported from module" {
           $module.ExportedCommands.Keys | Should Contain $Function

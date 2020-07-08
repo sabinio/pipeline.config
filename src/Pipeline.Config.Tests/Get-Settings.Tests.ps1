@@ -5,10 +5,10 @@ if (-not $ModulePath) { $ModulePath = join-path $PSScriptRoot "../Pipeline.Confi
 get-module Pipeline.Tools | Remove-Module -force
 #Import-Module "$ModuleBase\ConfigHelper.psm1"
 
-foreach ($function in (Get-ChildItem "$ModulePath/functions/internal/*.ps1")) {
+foreach ($function in (Get-ChildItem "$ModulePath/Functions/Internal/*.ps1")) {
     . $function 
 }
-foreach ($function in (Get-ChildItem "$ModulePath/functions/*.ps1")) {
+foreach ($function in (Get-ChildItem "$ModulePath/Functions/*.ps1")) {
     . $function
 }
 
@@ -150,7 +150,7 @@ Describe "Hierarchy Tests" {
     It "Given a setting with an expression ensure the verbose output returns correctly" {
         $myEnv = "SettingdependentonPersonal"
         $ConfigPath = Resolve-Path "$PSScriptRoot/test-config"
-        Mock GetPersonalConfigPath { "personal/$myEnv-person" }
+        Mock GetPersonalConfigPath { "personal/$myEnv-Person" }
         (Get-Settings -ConfigRootPath $ConfigPath -environment $MyEnv  ).SettingBasedonComplexSetting | Should be "ThePrefixIWant-SomeValue"
     }
 

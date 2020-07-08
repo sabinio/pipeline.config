@@ -1,3 +1,35 @@
+
+Function Clear-Artifacts{
+    [CmdletBinding()]
+     param ($destination)
+ $destinationWildcard = (Join-Path $destination "*")
+
+ if(Test-Path $destination){
+
+     Write-Verbose "Copying artifacts, clearing existing path"
+     Get-childItem $destinationWildcard -Exclude "_log" -Recurse | Remove-Item -Force -Recurse | Out-Null
+     
+ }
+}
+Function Copy-Artifacts{
+ [CmdletBinding()]
+ param(
+     $source,
+     $destination
+ )
+     
+ Write-Host "Copying artifacts from: '$source' to '$destination'"
+ 
+ $sourceWildcard = (Join-Path $source "*")
+
+ New-Item $destination -ItemType Directory -Force  | Out-Null
+
+ Copy-Item $sourceWildcard $destination -recurse -Force | Out-Null
+ 
+ Write-Host "Copied Artifacts:"
+ (Get-ChildItem $destination -recurse).FullName | %{Write-Verbose $_}
+}
+function Publish-Artifacts{
 [CmdletBinding(
     DefaultParameterSetName = 'multiple-paths'
 )]
@@ -34,36 +66,6 @@ Param(
     $name
 )
 
-Function Clear-Artifacts{
-       [CmdletBinding()]
-        param ($destination)
-    $destinationWildcard = (Join-Path $destination "*")
-
-    if(Test-Path $destination){
-
-        Write-Verbose "Copying artifacts, clearing existing path"
-        Get-childItem $destinationWildcard -Exclude "_log" -Recurse | Remove-Item -Force -Recurse | Out-Null
-        
-    }
-}
-Function Copy-Artifacts{
-    [CmdletBinding()]
-    param(
-        $source,
-        $destination
-    )
-        
-    Write-Host "Copying artifacts from: '$source' to '$destination'"
-    
-    $sourceWildcard = (Join-Path $source "*")
-
-    New-Item $destination -ItemType Directory -Force  | Out-Null
-
-    Copy-Item $sourceWildcard $destination -recurse -Force | Out-Null
-    
-    Write-Host "Copied Artifacts:"
-    (Get-ChildItem $destination -recurse).FullName | %{Write-Verbose $_}
-}
 
 switch($PSCmdlet.ParameterSetName){
     "multiple-paths"{
@@ -84,4 +86,5 @@ switch($PSCmdlet.ParameterSetName){
         Copy-Artifacts -source $path -destination (Join-Path $ArtifactsPath $name)
         break;
     }
+}
 }

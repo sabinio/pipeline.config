@@ -4,21 +4,34 @@ parameters:
 - name: pool
   type: string
   values: 
+  - none
   - sio-build-agents
   - windows-latest 
   - ubuntu-latest
   - macOS-latest
-  default: sio-build-agents
-  
+  default: 'none'
+- name: vmimage
+  type: string
+  default: ''
+
 - name: PublishArtifacts
   type: boolean
   default: false  
 
 jobs:
 - job: 
+
+  ${{ if eq(parameters.pool,'none') }}:
+    displayName: pscore=${{parameters.UsePowerShellCore}} agent=${{ parameters.vmimage }}
+  ${{ if ne(parameters.pool,'none') }}:
+    displayName: pscore=${{parameters.UsePowerShellCore}} agent=${{ parameters.pool }}
+
   pool:
-    name: ${{ parameters.pool }}
-  displayName: Test pscore=${{parameters.UsePowerShellCore}} agent=${{ parameters.pool }}
+    ${{ if ne(parameters.pool,'none') }}:
+      name: ${{ parameters.pool }}
+    ${{ if eq(parameters.pool,'none') }}:
+      vmImage: ${{parameters.vmimage}}
+
   steps:
   - checkout: self
     clean: false 
@@ -26,13 +39,15 @@ jobs:
   - task: PowerShell@2
     inputs:
       targetType: 'inline'
-      script: 'write-Host "##vso[task.setvariable variable=path;]$($env:localappdata)\Microsoft\dotnet;$($env:path)"'
+      script: |
+        if ($PSVersionTable.PLatform -ne "Unix"){write-Host "##vso[task.setvariable variable=path;]$($env:localappdata)\Microsoft\dotnet;$($env:path)"}
+        write-Host $env:path
 
   - task: PowerShell@2
     inputs:
       pwsh: $(UsePowerShellCore)
       filePath: $(System.DefaultWorkingDirectory)/.build/pipeline-tasks.ps1
-      arguments: -Install  
+      arguments: -Install  -VerboseLogging:Config
     displayName: 'Install'
 
   - task: PowerShell@2
@@ -60,10 +75,9 @@ jobs:
     displayName: 'Publish Test Results'
     inputs:
       testResultsFormat: NUnit
-      testRunTitle: Tests (PSCore=${{parameters.UsePowerShellCore}})
-      mergeTestResults: true
+      testRunTitle: Tests (PSCore=$(UsePowerShellCore))
       testResultsFiles: |
-        **/*tests.results.xml
+        **/*.tests.results.xml
       searchFolder: '$(System.DefaultWorkingDirectory)/out/test-results'
       failTaskOnFailedTests: true
     condition: succeededOrFailed()

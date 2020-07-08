@@ -4,9 +4,9 @@ if (-not $ModulePath) { $ModulePath = "$PSScriptRoot\..\Pipeline.Config.module" 
 
 get-module Pipeline.Config | Remove-Module -force
 
-. "$ModulePath\functions\Get-ProjectSettings.ps1"
-. "$ModulePath\functions\Get-MyIp.ps1"
-. "$ModulePath\functions\Get-Settings.ps1"
+. "$ModulePath\Functions\Get-ProjectSettings.ps1"
+. "$ModulePath\Functions\Get-MyIP.ps1"
+. "$ModulePath\Functions\Get-Settings.ps1"
 
 Describe "Test Get-ProjectSettings" {
     It "Doesn't fail if IpAddresses setting is not set" {

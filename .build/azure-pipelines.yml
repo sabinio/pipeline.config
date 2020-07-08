@@ -39,6 +39,12 @@ stages:
       pool: sio-build-agents
       PublishArtifacts: true
       
+  - template: azure-pipelines.buildTest.yml
+    parameters:
+      UsePowerShellCore: false
+      vmimage: ubuntu-latest
+      PublishArtifacts: false
+        
 - stage: TestPublishForCI
   dependsOn: BuildAndTest
   displayName: Test Publishing for master

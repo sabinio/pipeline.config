@@ -3,7 +3,7 @@ param($RootPath)
 if (-not $RootPath) { $RootPath = "$PSScriptRoot\..\.." }
 $configRoot = "$rootpath/.build/config/"
 Remove-module Pipeline.Config -force
-Import-Module $rootpath/src/Pipeline.Config.Module/Pipeline.Config.psd1 -Force 
+Import-Module $rootpath/src/Pipeline.Config.module/Pipeline.Config.psd1 -Force 
 
 BeforeAll {
     if ($env:OldUsername) { throw "`$env:oldUsername set, copy back to `$env:UserName to ensure you don't lose it" }

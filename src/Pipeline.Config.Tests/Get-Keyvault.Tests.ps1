@@ -5,7 +5,7 @@ if (-not $ModulePath){ $ModulePath = "$PSScriptRoot\..\Pipeline.Config.module"}
 get-module Pipeline.Config | Remove-Module -force
 #Import-Module "$ModuleBase\ConfigHelper.psm1"
 
-foreach ($function in (Get-ChildItem "$ModulePath\functions\Get-KeyVaultSecret*.ps1"))
+foreach ($function in (Get-ChildItem "$ModulePath\Functions\Get-KeyVaultSecret*.ps1"))
 {
 	. $function 
 }

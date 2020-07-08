@@ -1,5 +1,5 @@
 ---
-external help file: pipeline.Config-help.xml
+external help file: Pipeline.Config-help.xml
 Module Name: Pipeline.Config
 online version:
 schema: 2.0.0
@@ -81,7 +81,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### None
-
 ## OUTPUTS
 
 ### System.Object

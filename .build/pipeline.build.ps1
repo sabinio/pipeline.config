@@ -12,7 +12,7 @@ param($rootPath, $Settings)
         if ($settings.CleanBuild) {
          #   remove-item "src/$dbProjectName/bin/$($settings.buildconfig)/" -force -Recurse | Out-Null
         }
-        $Functions = (Get-ChildItem $rootpath/src/$ProjectName.module/functions -File | Select-Object ).BaseName
+        $Functions = (Get-ChildItem $rootpath/src/$ProjectName.module/Functions -File | Select-Object ).BaseName
 
         Update-ModuleManifest -Path $rootpath/src/$ProjectName.module/$ProjectName.psd1   -FunctionsToExport $Functions
         

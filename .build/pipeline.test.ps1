@@ -16,9 +16,9 @@ try {
     else {
         New-Item -ItemType Directory -Force -Path "$outPath/test-results/" | Out-Null 
     }
-    remove-module $ProjectName -force
+    get-module $ProjectName | remove-module  -force
 
-    $ScriptAnalysis = Invoke-Pester -Script @{Path = "$rootpath/src/$ProjectName.tests"; Parameters=@{ProjectName=$ProjectName}} `
+    $ScriptAnalysis = Invoke-Pester -Script @{Path = "$rootpath/src/$ProjectName.Tests"; Parameters=@{ProjectName=$ProjectName}} `
                             -Tag "PSScriptAnalyzer" `
                             -ExcludeTag $settings.ExcludeTags `
                             -OutputFile "$outPath/test-results/$ProjectName.PsScripttests.results.xml" `
@@ -26,7 +26,7 @@ try {
                             -PassThru `
                             -Show Fails
                             
-    $NormalTests = Invoke-Pester -Script @{Path = "$rootpath/src/$ProjectName.tests"; Parameters=@{ModulePath="$artifactsPath\$ProjectName";ProjectName=$ProjectName}} `
+    $NormalTests = Invoke-Pester -Script @{Path = "$rootpath/src/$ProjectName.Tests"; Parameters=@{ModulePath="$artifactsPath\$ProjectName";ProjectName=$ProjectName}} `
                             -ExcludeTag "PSScriptAnalyzer" `
                             -OutputFile "$outPath/test-results/$ProjectName.tests.results.xml" `
                             -OutputFormat NUnitXml  `
