@@ -55,7 +55,8 @@ try {
 		Write-Host "##[endgroup]"
     }
 	
-	Write-Host "##[group]Settings"
+    Write-Host "##[group]Settings"
+    Import-Module ../src/Pipeline.Config.module/Pipeline.Config.psd1 -Force -verbose:$ConfigVerbose #Verbose needs to be passed through as its not taken from the scripts setting
     $settings = (Get-ProjectSettings -environment $environment -ConfigRootPath (join-path $PSScriptroot "config") -verbose:(Test-LogAreaEnabled -logging $verboseLogging -area "config") -overrides $parameterOverrides) 
     write-host ("##vso[build.updatebuildnumber] {0}.{1}" -f $settings.ProjectName, $settings.FullVersion)
 	write-host ("##vso[task.setvariable variable=ProjectName;]{0}" -f $settings.ProjectName)
