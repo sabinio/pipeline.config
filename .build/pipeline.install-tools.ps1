@@ -1,6 +1,5 @@
 [CmdletBinding()]
 param($ArtifactsPath)
-
 #import-module "$psscriptroot\..\src\$($settings.ProjectName).module\$($settings.ProjectName).psd1" -force
 
 function Repair-PSModulePath {
@@ -37,11 +36,12 @@ if (-not ((get-module Pipeline.Tools -Verbose:$VerbosePreference).Version -eq $L
 }
 
 #Powershell Get needs to be first otherwise it gets loaded by use of import-module
-@{Module="PowerShellGet";Version=2.2.4.1},`
-@{Module="Pester";MaxVersion="4.9999.0";},`
-@{Module="PSScriptAnalyzer";Latest=$true},`
-@{Module="platyps";Latest=$true},`
-@{Module="Az.keyVault";} |ForEach-Object{ Install-PsModuleFast @_}
+$modules =    [scriptblock]::create( (Get-Content $psscriptroot\modules.ps1 -raw )).Invoke()
+
+$modules | ForEach-Object{ 	Install-PsModuleFast @_  -verbose:$VerbosePreference}
+
+Write-Host "Modules loaded "
+Write-Host (get-module $modules.module | Format-Table Name, Version,ModuleType, Path| Out-String)
 
 Install-AzDoArtifactsCredProvider
 

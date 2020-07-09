@@ -88,13 +88,13 @@ jobs:
       inputs:
         codeCoverageTool: 'JaCoCo'
         summaryFileLocation: '$(System.DefaultWorkingDirectory)/out/test-results/coverage_*.xml'
-        pathToSources: '$(System.DefaultWorkingDirectory)/src/Pipeline.Config.module'
+        pathToSources: '$(System.DefaultWorkingDirectory)/src/$(ProjectName).module'
         failIfCoverageEmpty: true
 
     - publish: '$(artifactsPath)/.build'
       artifact: '.build'
       condition: succeededOrFailed()
 
-    - publish: '$(artifactsPath)/Pipeline.Config'
-      artifact: 'Pipeline.Config'
+    - publish: '$(artifactsPath)/$(ProjectName)'
+      artifact: '$(ProjectName)'
       condition: succeededOrFailed()
