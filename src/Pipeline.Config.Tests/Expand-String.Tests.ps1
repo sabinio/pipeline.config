@@ -1,11 +1,11 @@
 param($ModulePath)
 $CommandName = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
-
+Write-Host $CommandName
 if (-not $ModulePath) { $ModulePath =  join-path (join-path $PSScriptRoot "..") "Pipeline.Config.module" }
 
 get-module Pipeline.Config | Remove-Module -force
 
-. $ModulePath/functions/$CommandName.ps1
+. $ModulePath/Functions/$CommandName.ps1
 
 function Compare-string
 {
