@@ -3,15 +3,14 @@ param($ModulePath)
 if (-not $ModulePath) { $ModulePath = "$PSScriptRoot\..\Pipeline.Config.module" }
 
 get-module Pipeline.Config | Remove-Module -force
+$PSModuleAutoloadingPreference = "None"
 
-. "$ModulePath\Functions\Internal\Import-SettingsFromPersonalFile.ps1"
-. "$ModulePath\Functions\Import-SettingsFromFile.ps1"
-. "$ModulePath\Functions\Internal\GetPersonalConfigName.ps1"
+. "$ModulePath\Functions\Invoke-SettingEvaluation.ps1"
+. "$ModulePath\Functions\Expand-String.ps1"
 
-Describe "Test Import-PersonalSettings" {
+Describe "Test Invoke-SettingEvaluation " {
     It "If personal ignore file exists use that" {
 
-        Invoke-SettingEvaluation 
-Write-Verbose "Processing key $settingName with value $value" 
+        {Invoke-SettingEvaluation} | Should not throw
     }
 }
