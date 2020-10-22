@@ -51,8 +51,8 @@ $ErrorActionPreference = "Stop"
             $Exception = ($_.Exception.Message | out-string)
         }
         $Exception | should belike "*At line:1 char:8*"
-        $Exception | should belike "*Unexpected token '"a string"' in expression or statement*"
-        $Exception | should belike "*+ {"{0}" "a string"}*"
+        $Exception | should belike "*Unexpected token '`"a string`"' in expression or statement*"
+        $Exception | should belike '*+ {"{0}`" "a string"}*'
 
         $results = Compare-string ($expected -replace "\r","" -replace "\n","") ($exception -replace "\r","" -replace "\n","")
         if ($results.mismatch -gt 0){
