@@ -6,12 +6,13 @@ function Expand-String {
     #If its a script need to invoke it
     if ($ExpressionToExpand -is [String] `
             -and $ExpressionToExpand.StartsWith("{") -and $ExpressionToExpand.EndsWith("}")) {
-        Write-Verbose "evaluating script"
+        Write-Verbose "evaluating script $ExpressionToExpand"
         try{
             $Script = [scriptblock]::create($ExpressionToExpand).invoke()
         }
         Catch{
             $errorString = "Failed to create script block from value '$ExpressionToExpand'"
+            $errorString =  $_.Exception.InnerException.Message
             Throw $errorString
         }
 
