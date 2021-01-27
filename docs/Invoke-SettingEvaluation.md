@@ -8,7 +8,7 @@ schema: 2.0.0
 # Invoke-SettingEvaluation
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Walks the settings to evaluate them and return an updated settings structure
 
 ## SYNTAX
 
@@ -17,16 +17,16 @@ Invoke-SettingEvaluation [[-settings] <Object>] [[-thisSettings] <Object>] [<Com
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Loops around all the properties in the settings (either hash keys or psobjects) and 
+evaluates the values using Expand-String for strings or calling this function again for lists
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+<example usage>
+Explanation of what the example does
+```
 
 ## PARAMETERS
 
@@ -39,7 +39,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -54,7 +54,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 1
+Position: 2
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -65,10 +65,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
+### settings = the global settings used to allow expressions to refer to the settings i.e. databaseName = "{$Settings.environment & "-" & $settings.Project"
+### thisSettings = the object to be evaluating the keys of.
 ## OUTPUTS
 
-### System.Object
+### Output (if any)
 ## NOTES
+General notes
 
 ## RELATED LINKS

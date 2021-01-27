@@ -52,7 +52,14 @@ Function Invoke-SettingEvaluation {
                         $index++
                     }
                 }
-                else {
+                elseif($value -isnot [securestring] ) {
+                    foreach ($item in $value.psobject.Properties){
+                        $name = $item.Name
+                        $thisSettings.$settingName.$name = Invoke-SettingEvaluation -thisSettings $value.$name -settings $settings
+                    }
+                   
+                }
+                else{
                     Write-Verbose "   Setting $($thisSettings.GetType().Name) $($value.GetType().Name) $settingName to $value"
                     #      $value | Invoke-Expression
                 }

@@ -25,9 +25,10 @@ try {
                             -OutputFormat NUnitXml `
                             -PassThru `
                             -Show Fails
-                            
+                           
     $NormalTests = Invoke-Pester -Script @{Path = "$rootpath/src/$ProjectName.Tests"; Parameters=@{ModulePath="$artifactsPath\$ProjectName";ProjectName=$ProjectName}} `
                             -ExcludeTag "PSScriptAnalyzer" `
+                            -TestName "*$($settings.TestName)*" `
                             -OutputFile "$outPath/test-results/$ProjectName.tests.results.xml" `
                             -OutputFormat NUnitXml  `
                             -CodeCoverage "$artifactsPath\$ProjectName\Functions\*.ps1" `

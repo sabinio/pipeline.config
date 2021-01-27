@@ -5,8 +5,8 @@ Function Get-KeyVaultSecrets {
         [string]$vaultName
     )
 
-    $foo = Get-AzKeyVaultSecret -VaultName $vaultName
-    $foo | Foreach-Object {
+    $secrets = Get-AzKeyVaultSecret -VaultName $vaultName
+    $secrets | Foreach-Object {
       # get-AzKeyVaultSecret doesn't return the secret unless the secretname is passed.
       # We use 
         $secret = Get-KeyVaultSecret -vaultName $vaultName -secretName $_.Name

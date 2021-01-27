@@ -48,6 +48,7 @@ Accept wildcard characters: False
 ## INPUTS
 
 ### None
+
 ## OUTPUTS
 
 ### System.Object

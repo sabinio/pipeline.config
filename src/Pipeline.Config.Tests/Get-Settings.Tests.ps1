@@ -2,15 +2,15 @@
 
 if (-not $ModulePath) { $ModulePath = join-path $PSScriptRoot "../Pipeline.Config.module" }
 
-get-module Pipeline.Tools | Remove-Module -force
-#Import-Module "$ModuleBase\ConfigHelper.psm1"
+    get-module Pipeline.Config | Remove-Module -force -Verbose:$false
+    #Import-Module "$ModuleBase\ConfigHelper.psm1"
 
-foreach ($function in (Get-ChildItem "$ModulePath/Functions/Internal/*.ps1")) {
-    . $function 
-}
-foreach ($function in (Get-ChildItem "$ModulePath/Functions/*.ps1")) {
-    . $function
-}
+    foreach ($function in (Get-ChildItem "$ModulePath/Functions/Internal/*.ps1")) {
+        . $function 
+    }
+    foreach ($function in (Get-ChildItem "$ModulePath/Functions/*.ps1")) {
+        . $function
+    }
 
 #InModuleScope ConfigHelper {
 Describe 'Get-Settings' {
@@ -304,7 +304,7 @@ Describe 'Get-SettingsFromKeyVault' {
         
         $settings =Get-Settings -ConfigRootPath $PSScriptRoot/KeyVaultConfig 
         Assert-VerifiableMock
-        $settings.$Setting1 |Should not be $null
+        $settings.$Setting1 |Should -not -be $null
         GetSecret  $settings.$Setting1 | Should be $secret
     }
 }

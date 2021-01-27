@@ -1,0 +1,8 @@
+{
+    "settingFrom": "base",
+   
+    "ParentWithChildSettings": {
+        "Setting1": "{$Settings.settingFrom}",
+        "Setting2": "{$Settings.ParentWithChildSettings.Setting1}"
+    }
+}
