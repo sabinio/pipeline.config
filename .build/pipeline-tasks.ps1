@@ -16,6 +16,7 @@ param (
     $parameterOverrides
 )
 $global:ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Stop"
 
 push-location $PSScriptroot
 Set-StrictMode -Version 1.0
@@ -30,10 +31,6 @@ try {
     [string] $outPath = join-path $rootPath "out";
 
     . $PSScriptroot/scripts/logging.ps1
-
-    if (-not $noLogo) {
-        Write-SIOBanner
-    }
 
 	Write-Host "Processing with "
     Write-Host "   Root path       = $rootpath"
