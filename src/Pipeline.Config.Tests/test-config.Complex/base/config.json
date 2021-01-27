@@ -1,8 +1,11 @@
 {
     "settingFrom": "base",
-   
     "ParentWithChildSettings": {
         "Setting1": "{$Settings.settingFrom}",
-        "Setting2": "{$Settings.ParentWithChildSettings.Setting1}"
+        "Setting2": "{$Settings.ParentWithChildSettings.Setting1}",
+        "Level1ChildSetting": {
+            "Level2ChildSetting": "{$settings.ParentWithChildSettings.Setting1}",
+            "Level2Array":["{$settings.ParentWithChildSettings.Level1ChildSetting.Level2ChildSetting}"]
+        }
     }
 }

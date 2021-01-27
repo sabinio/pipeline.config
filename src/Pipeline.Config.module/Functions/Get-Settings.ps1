@@ -54,7 +54,6 @@ Function Get-Settings {
         }
     }
 
-
     if (-not $null -eq $overrides) {
         Write-Host "Loading settings from overrides"
 

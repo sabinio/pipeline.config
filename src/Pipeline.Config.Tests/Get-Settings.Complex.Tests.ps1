@@ -12,10 +12,21 @@
         . $function
     }
 Describe "Complex Tests" {
-    It "Given a hierarchy, children are overwritten" {
-        $settings =  Get-Settings -ConfigRootPath "$PSScriptRoot/test-config.Complex" -environment hierarchy -verbose
+    It "Given a hierarchy, children have expressions expanded" {
+        $settings =  Get-Settings -ConfigRootPath "$PSScriptRoot/test-config.Complex" -environment hierarchy 
         
         $settings.ParentWithChildSettings.Setting1| Should -be $settings.settingFrom
         $settings.ParentWithChildSettings.Setting2| Should -be $settings.settingFrom
+    }
+    It "Given a hierarchy, children that are arrays have expressionsExpanded" {
+        $settings =  Get-Settings -ConfigRootPath "$PSScriptRoot/test-config.Complex" -environment hierarchy 
+        
+        $settings.ParentWithChildSettings.Level1ChildSetting.Level2Array | Should -be @($settings.settingFrom)
+    }
+    It "Given a hierarchy, children that have childen attributes have expressionsExpanded" {
+        $settings =  Get-Settings -ConfigRootPath "$PSScriptRoot/test-config.Complex" -environment hierarchy 
+        
+        $settings.ParentWithChildSettings.Level1ChildSetting.Level2ChildSetting | Should -be $settings.settingFrom
+        
     }
 }

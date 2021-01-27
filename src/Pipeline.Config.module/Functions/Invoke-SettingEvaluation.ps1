@@ -31,16 +31,16 @@ Function Invoke-SettingEvaluation {
     
             $thisSettings.PSObject.properties | ForEach-Object {
                 $settingName = "$($_.Name)"
-                $value = $thisSettings."$($_.Name)"
+                $value = $thisSettings.$settingName
                 Write-Verbose "Processing key $settingName with value $value" 
             
                 if ($null -eq $value) {
-                    $thisSettings."$($_.Name)" = $null    
-                    Write-Verbose "Setting $($_.Name) to `$null"
+                    $thisSettings.$settingName = $null    
+                    Write-Verbose "Setting $settingName to `$null"
                 }
                 elseif ($value -is [String] ) {   
-                    $thisSettings."$($_.Name)" = Expand-String $value       
-                    Write-Verbose "Setting $($_.Name) to $($thisSettings."$($_.Name)")"
+                    $thisSettings.$settingName = Expand-String $value       
+                    Write-Verbose "Setting $settingName to $($thisSettings.$settingName)"
                 }
                 elseif ($null -ne $value -and $value -is [object[]]) {
             
