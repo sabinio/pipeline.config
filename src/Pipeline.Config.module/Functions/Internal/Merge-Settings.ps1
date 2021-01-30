@@ -4,7 +4,7 @@ function Merge-Settings{
     param($currentSettings, $newSettings)
 
         Write-Verbose "$($currentSettings | ConvertTo-Json)"
-$foo = $bob
+
         $NewSettings.PSObject.properties | ForEach-Object {    
             $property = $_
             $Prop = $Property.Name
@@ -14,7 +14,7 @@ $foo = $bob
                 if ($null -ne $currentSettings.$Prop -and
                     $currentSettings.$Prop -is [PSObject]) {
                     Write-Verbose "Property $($property.Name) is Object so merging that with property of type $($Property.TypeNameOfValue)"    
-                    Merge-Settings -CurrentSettings $Settings.$Prop -newSettings $property.Value
+                    Merge-Settings -CurrentSettings $CurrentSettings.$Prop -newSettings $property.Value
                 }
                 else {
                     $currentSettings.$Prop = $property.Value
