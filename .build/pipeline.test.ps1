@@ -18,29 +18,31 @@ try {
     }
     get-module $ProjectName | remove-module  -force
 
-    $ScriptAnalysis = Invoke-Pester -Script @{Path = "$rootpath/src/$ProjectName.Tests"; Parameters=@{ProjectName=$ProjectName}} `
-                            -Tag "PSScriptAnalyzer" `
-                            -ExcludeTag $settings.ExcludeTags `
-                            -OutputFile "$outPath/test-results/$ProjectName.PsScripttests.results.xml" `
-                            -OutputFormat NUnitXml `
-                            -PassThru `
-                            -Show Fails
-                           
-    $NormalTests = Invoke-Pester -Script @{Path = "$rootpath/src/$ProjectName.Tests"; Parameters=@{ModulePath="$artifactsPath\$ProjectName";ProjectName=$ProjectName}} `
-                            -ExcludeTag "PSScriptAnalyzer" `
-                            -TestName "*$($settings.TestName)*" `
-                            -OutputFile "$outPath/test-results/$ProjectName.tests.results.xml" `
-                            -OutputFormat NUnitXml  `
-                            -CodeCoverage "$artifactsPath\$ProjectName\Functions\*.ps1" `
-                            -CodeCoverageOutputFile "$outPath/test-results/coverage_$ProjectName.xml"  `
-                            -PassThru `
-                            -Show Fails
+	$container = New-PesterContainer -Path  "$rootpath/src/$ProjectName.Tests" -Data @{ModulePath="$artifactsPath\$ProjectName";ProjectName=$ProjectName}; #An empty data is required for Pester 5.1.0 Beta 
 
-    Write-Host "Normal Tests Total $($NormalTests.TotalCount ) Passed $($NormalTests.PassedCount) "
-    Write-Host "ScriptAnalysis Tests Total $($ScriptAnalysis.TotalCount ) Passed $($ScriptAnalysis.PassedCount) "
+	$ScriptAnalysis = Invoke-Pester -container $container -passthru -Tag "PSScriptAnalyzer" -ExcludeTag $settings.ExcludeTags
+	$ScriptAnalysis | Export-NUnitReport -path  "$outPath/test-results/$ProjectName.PsScripttests.results.xml" `
+							
+	
+	$container = New-PesterContainer -Path "$rootpath/src/$ProjectName.Tests" -Data @{ModulePath="$artifactsPath\$ProjectName";ProjectName=$ProjectName}  #An empty data is required for Pester 5.1.0 Beta 
+
+	$pesterpreference = [PesterCOnfiguration]::Default      
+	$pesterpreference.CodeCoverage.Enabled=$true
+	$pesterpreference.CodeCoverage.OutputPath  = "$outPath/test-results/coverage_$ProjectName.xml"  
+	$pesterpreference.CodeCoverage.Path = "$artifactsPath\$ProjectName\Functions\*.ps1" 
+    $pesterpreference.Run.Container = $container
+    $pesterpreference.Run.PassThru = $true
+    $pesterpreference.Filter.ExcludeTag =  "PSScriptAnalyzer" 
+    
+    $NormalTests = Invoke-Pester -Configuration $pesterpreference 
+	$NormalTests |Export-NUnitReport -path  "$outPath/test-results/$ProjectName.tests.results.xml" 
+	$pesterpreference = [PesterCOnfiguration]::Default     
+	
+    Write-Host "Normal Tests Total $($NormalTests.TotalCount ) Passed $($NormalTests.PassedCount) Skipped $($NormalTests.NotRunCount)"
+    Write-Host "ScriptAnalysis Tests Total $($ScriptAnalysis.TotalCount ) Passed $($ScriptAnalysis.PassedCount) Skipped $( $ScriptAnalysis.NotRunCount) "
     if ($settings.FailOnTests -eq $true -and `
-        ($NormalTests.TotalCount -ne $NormalTests.PassedCount `
-        -or $ScriptAnalysis.TotalCount -ne $ScriptAnalysis.PassedCount  ))
+        ($NormalTests.TotalCount -ne ($NormalTests.PassedCount + $NormalTests.NotRunCount)`
+        -or $ScriptAnalysis.TotalCount -ne ($ScriptAnalysis.PassedCount+ $ScriptAnalysis.NotRunCount)  ))
         {
             Throw "Tests Failed see above"
     }

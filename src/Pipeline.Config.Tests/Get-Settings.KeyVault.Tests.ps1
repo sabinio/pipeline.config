@@ -1,16 +1,18 @@
 ﻿param($ModulePath)
 
-    if (-not $ModulePath) { $ModulePath = join-path $PSScriptRoot "../Pipeline.Config.module" }
+BeforeAll {
+	Set-StrictMode -Version 1.0
+	if (-not $PSBoundParameters.ContainsKey("ProjectName")) { $ProjectName = (get-item $PSScriptRoot).basename -replace ".tests", "" }
+	if (-not $PSBoundParameters.ContainsKey("ModulePath")) { $ModulePath = "$PSScriptRoot\..\$ProjectName.module" }
 
     get-module Pipeline.Config | Remove-Module -force
-    #Import-Module "$ModuleBase\ConfigHelper.psm1"
-
     foreach ($function in (Get-ChildItem "$ModulePath/Functions/Internal/*.ps1")) {
         . $function 
     }
     foreach ($function in (Get-ChildItem "$ModulePath/Functions/*.ps1")) {
         . $function
     }
+}
 Describe 'Get-SettingsFromKeyVault' {
 
     It "KeyVaultConfigs are loaded from the KV in config" {
@@ -34,6 +36,6 @@ Describe 'Get-SettingsFromKeyVault' {
         $settings =Get-Settings -ConfigRootPath $PSScriptRoot/KeyVaultConfig 
         Assert-VerifiableMock
         $settings.$Setting1 |Should -not -be $null
-        GetSecret  $settings.$Setting1 | Should be $secret
+        GetSecret  $settings.$Setting1 | Should -Be $secret
     }
 }

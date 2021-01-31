@@ -1,12 +1,15 @@
 param($ModulePath)
 
-if (-not $ModulePath) { $ModulePath = "$PSScriptRoot\..\Pipeline.Config.module" }
+BeforeAll {
+	Set-StrictMode -Version 1.0
+	if (-not $PSBoundParameters.ContainsKey("ProjectName")) { $ProjectName = (get-item $PSScriptRoot).basename -replace ".tests", "" }
+	if (-not $PSBoundParameters.ContainsKey("ModulePath")) { $ModulePath = "$PSScriptRoot\..\$ProjectName.module" }
 
-get-module Pipeline.Config | Remove-Module -force
-
-. "$ModulePath\Functions\Internal\Import-SettingsFromPersonalFile.ps1"
-. "$ModulePath\Functions\Import-SettingsFromFile.ps1"
-. "$ModulePath\Functions\Internal\GetPersonalConfigName.ps1"
+    get-module Pipeline.Config | Remove-Module -force
+    . "$ModulePath\Functions\Internal\Import-SettingsFromPersonalFile.ps1"
+    . "$ModulePath\Functions\Import-SettingsFromFile.ps1"
+    . "$ModulePath\Functions\Internal\GetPersonalConfigName.ps1"
+}
 
 Describe "Test Import-PersonalSettings" {
     It "If personal ignore file exists use that" {
