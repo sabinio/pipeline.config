@@ -1,4 +1,8 @@
 {
-    "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
+    "workbench.tree.indent": 20,
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+        "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
     "powershell.pester.useLegacyCodeLens": false
+
 }
