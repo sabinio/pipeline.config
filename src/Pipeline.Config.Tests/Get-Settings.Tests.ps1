@@ -1,6 +1,6 @@
 ﻿param($ModulePath)
 
-BeforeAll {
+    BeforeAll {
     if (-not $ModulePath) { $ModulePath = join-path $PSScriptRoot "../Pipeline.Config.module" }
     get-module Pipeline.Config | Remove-Module -force -Verbose:$false
     foreach ($function in (Get-ChildItem "$ModulePath/Functions/Internal/*.ps1")) {
@@ -13,10 +13,12 @@ BeforeAll {
 
 #InModuleScope ConfigHelper {
 Describe 'Get-Settings' {
-    BeforeAll {
-        $env:settingFrom = ""
-        $env:parent = ""
-    }
+    	BeforeAll {
+    $env:settingFrom = ""
+    $env:parent = ""
+
+}
+	
     It "Given no config files, fails" {
         
         $missingConfigPath = "TestDrive:missing"
@@ -89,6 +91,7 @@ Describe "Get-MyIp" {
     }
 }
 Describe "Hierarchy Tests" {
+
     It "Given a hierarchy, children are overwritten" {
         (Get-Settings -ConfigRootPath $PSScriptRoot/test-config -environment hierarchy).parent[0].childValue | Should -Be "hierarchy"
     }
@@ -220,7 +223,7 @@ Describe "Value formatting tests" {
     }
     it "Given a string referencing a local variable the value Should -Be expanded" {
         $localValue = "avalue"
-        Expand-String "`$localValue" | Should -Be "avalue"
+        Expand-String "`$localValue" | Should -Be "avalue" 
     }
     it "Given a string referencing a local variable with properties the value Should -Be expanded" {
         $localValue = @{myproperty = "avalue" }

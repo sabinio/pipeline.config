@@ -41,7 +41,6 @@ Describe 'PSAnalyser Testing Modules ' -Tag "PSScriptAnalyzer" -ForEach $Modules
 
 Describe 'PSAnalyser Testing scripts - <BaseName> <sourceFile>'  -Tag "PSScriptAnalyzer" -ForEach ($Scripts | ForEach-Object {@{Basename=$_.basename;sourcefile=$_.FullName}}) {
 	BeforeAll {
-		Write-Verbose "Scripts before - $BaseName" -Verbose
 		$sourceFile = $sourcefile.replace($ModulePath, $sourcePath )
 
 		$RuleResults = Invoke-ScriptAnalyzer -Path $sourcefile    -ExcludeRule $ExcludeRules

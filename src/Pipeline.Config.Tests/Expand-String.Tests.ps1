@@ -75,7 +75,7 @@ Describe "Validate Verbose output for $CommandName" {
     It "Verbose output returns script expression" {
         Mock Write-Verbose { Write-Host "**$Message" }
 
-        Expand-String "{'Hello'}" -Verbose | Should -be "Hello"
+        Expand-String "{'Hello'}" | Should -be "Hello"
 
         Assert-MockCalled Write-Verbose  -times 1
         Assert-MockCalled Write-Verbose -parameterFilter { $Message -like "*evaluating script {'Hello'}" } -times 1

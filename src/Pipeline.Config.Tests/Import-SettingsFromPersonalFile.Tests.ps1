@@ -8,7 +8,7 @@ BeforeAll {
     get-module Pipeline.Config | Remove-Module -force
     . "$ModulePath\Functions\Internal\Import-SettingsFromPersonalFile.ps1"
     . "$ModulePath\Functions\Import-SettingsFromFile.ps1"
-    . "$ModulePath\Functions\Internal\GetPersonalConfigName.ps1"
+    . "$ModulePath\Functions\Internal\GetPersonalConfigPath.ps1"
 }
 
 Describe "Test Import-PersonalSettings" {
