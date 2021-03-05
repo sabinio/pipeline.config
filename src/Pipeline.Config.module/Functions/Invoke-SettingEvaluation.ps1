@@ -70,7 +70,7 @@ Function Invoke-SettingEvaluation {
         $thisSettings = Expand-String $thisSettings
     }
     Write-Verbose "Settings Done:"
-    Write-Verbose "$($thisSettings | ConvertTo-Json)"
+    Write-Verbose "$($thisSettings | ConvertTo-Json -depth 5)"
 
     $thisSettings
 }

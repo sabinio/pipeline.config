@@ -20,5 +20,5 @@ Function Set-Setting{
         $settings| Add-Member -MemberType NoteProperty -Name  $Name -Value $Value -Force
         Write-Verbose "Setting $Name to value $Value"
         $settings.$Name = $Value
-        Convertto-json $settings | Out-File $configFile
+        Convertto-json $settings -depth 10| Out-File $configFile
 }

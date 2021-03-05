@@ -3,7 +3,7 @@ function Merge-Settings{
     [CmdletBinding()]
     param($currentSettings, $newSettings)
 
-        Write-Verbose "$($currentSettings | ConvertTo-Json)"
+        Write-Verbose "$($currentSettings | ConvertTo-Json -depth 5)"
 
         $NewSettings.PSObject.properties | ForEach-Object {    
             $property = $_

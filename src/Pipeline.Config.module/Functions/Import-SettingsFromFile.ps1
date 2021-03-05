@@ -7,7 +7,7 @@ Function Import-SettingsFromFile {
 
     $inputSettings = (Get-Content $file -raw | ConvertFrom-Json)
     Write-Verbose "------ Procesing File $file"
-    Write-Verbose  (convertto-json $inputSettings) 
+    Write-Verbose  (convertto-json $inputSettings -depth 5) 
     Merge-Settings -currentSettings $settings -newSettings $inputSettings
     
 }

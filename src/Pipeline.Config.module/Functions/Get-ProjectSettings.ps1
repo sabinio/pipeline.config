@@ -25,7 +25,7 @@ Function Get-ProjectSettings {
         }
     }
 
-    Write-Verbose "($envSettings | ConvertTo-Json)"
+    Write-Verbose "($envSettings | ConvertTo-Json -depth 5)"
     
     return $settings
 }
