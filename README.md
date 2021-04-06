@@ -5,4 +5,4 @@ Powershell module for managing the install of tools. Cmdlets to check if module 
 
 ## Documentation
 
-Docs are generated to [docs folder](.\docs\Home.md) using ```platyps```
+Docs are generated to [docs folder](/docs/Home.md) using ```platyps```
