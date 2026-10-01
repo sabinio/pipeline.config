@@ -6,3 +6,7 @@ Powershell module for managing the install of tools. Cmdlets to check if module 
 ## Documentation
 
 Docs are generated to [docs folder](/docs/Home.md) using ```platyps```
+
+## License
+
+Released under the [MIT License](LICENSE).
