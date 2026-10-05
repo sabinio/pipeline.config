@@ -24,53 +24,43 @@ Function Invoke-SettingEvaluation {
         Write-Verbose "Evaluating Settings in order that we found them..."
         $thisSettings=$settings
     }
-   
-    if ($thisSettings -is [psobject] -or $thisSettings -is [hashtable]) {
-        $props = $thisSettings.PSObject.properties
-        if ($null -ne $props) {
-    
-            $thisSettings.PSObject.properties | ForEach-Object {
-                $settingName = "$($_.Name)"
-                $value = $thisSettings.$settingName
-                Write-Verbose "Processing key $settingName with value $value" 
-            
-                if ($null -eq $value) {
-                    $thisSettings.$settingName = $null    
-                    Write-Verbose "Setting $settingName to `$null"
-                }
-                elseif ($value -is [String] ) {   
-                    $thisSettings.$settingName = Expand-String $value       
-                    Write-Verbose "Setting $settingName to $($thisSettings.$settingName)"
-                }
-                elseif ($null -ne $value -and $value -is [object[]]) {
-            
-                    $index = 0
-                    Write-Verbose "  Processing Array"
-                    foreach ($item in $value) {
-            
-                        $thisSettings."$settingName"[$index] = Invoke-SettingEvaluation -thisSettings $value[$index] -settings $settings
-                        $index++
-                    }
-                }
-                elseif($value -isnot [securestring] ) {
-                    foreach ($item in $value.psobject.Properties){
-                        $name = $item.Name
-                        $thisSettings.$settingName.$name = Invoke-SettingEvaluation -thisSettings $value.$name -settings $settings
-                    }
-                   
-                }
-                else{
-                    Write-Verbose "   Setting $($thisSettings.GetType().Name) $($value.GetType().Name) $settingName to $value"
-                    #      $value | Invoke-Expression
-                }
-            }     
+
+    # Every value is dispatched on its own type, so arrays, objects and scalars are handled
+    # identically at any nesting depth.
+    Function Resolve-Value($value) {
+        if ($null -eq $value) {
+            return $null
+        }
+        elseif ($value -is [string]) {
+            return Expand-String $value
+        }
+        elseif ($value -is [System.Collections.IDictionary]) {
+            foreach ($key in @($value.Keys)) {
+                $value[$key] = Resolve-Value $value[$key]
+            }
+            return $value
+        }
+        elseif ($value -is [System.Array]) {
+            for ($index = 0; $index -lt $value.Count; $index++) {
+                $value[$index] = Resolve-Value $value[$index]
+            }
+            return , $value
+        }
+        elseif ($value -is [System.Management.Automation.PSCustomObject]) {
+            foreach ($property in @($value.PSObject.Properties)) {
+                $property.Value = Resolve-Value $property.Value
+            }
+            return $value
+        }
+        else {
+            # booleans, numbers, securestrings etc. are left exactly as they are
+            return $value
         }
     }
-    else {
-        $thisSettings = Expand-String $thisSettings
-    }
+
+    $thisSettings = Resolve-Value $thisSettings
     Write-Verbose "Settings Done:"
-    Write-Verbose "$($thisSettings | ConvertTo-Json -depth 5)"
+    Write-Verbose "$($thisSettings | ConvertTo-Json -depth 10)"
 
     $thisSettings
 }
